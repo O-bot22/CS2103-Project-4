@@ -1,0 +1,16 @@
+{
+    "java.project.sourcePaths": [
+        "."
+    ],
+    "java.project.referencedLibraries": [
+        "c:\\Users\\owenr\\Documents\\Java Stuffs\\javafx-sdk-23.0.1\\lib\\javafx.controls.jar",
+        "c:\\Users\\owenr\\Documents\\Java Stuffs\\javafx-sdk-23.0.1\\lib\\javafx.base.jar",
+        "c:\\Users\\owenr\\Documents\\Java Stuffs\\javafx-sdk-23.0.1\\lib\\javafx-swt.jar",
+        "c:\\Users\\owenr\\Documents\\Java Stuffs\\javafx-sdk-23.0.1\\lib\\javafx.swing.jar",
+        "c:\\Users\\owenr\\Documents\\Java Stuffs\\javafx-sdk-23.0.1\\lib\\javafx.web.jar",
+        "c:\\Users\\owenr\\Documents\\Java Stuffs\\javafx-sdk-23.0.1\\lib\\javafx.fxml.jar",
+        "c:\\Users\\owenr\\Documents\\Java Stuffs\\javafx-sdk-23.0.1\\lib\\javafx.media.jar",
+        "c:\\Users\\owenr\\Documents\\Java Stuffs\\javafx-sdk-23.0.1\\lib\\javafx.graphics.jar",
+        "test-lib\\**\\*.jar"
+    ]
+}
