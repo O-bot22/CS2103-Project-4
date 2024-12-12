@@ -1,12 +1,10 @@
 public class Variable implements Expression{
-	private float _value;
 
-    public Variable (String s) {
-        _value = Float.parseFloat(s);
+    public Variable () {
     }
     
     public Expression deepCopy (){
-		return new Variable(Float.toString(_value));
+		return new Variable();
     };
 
 	/**
@@ -22,7 +20,7 @@ public class Variable implements Expression{
 		for(int i=0; i<indentLevel; i++){
 			s += '\t';
 		}
-		s += Float.toString(_value);
+		s += 'x';
 		return s;
 	};
 

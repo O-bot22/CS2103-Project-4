@@ -127,25 +127,29 @@ public class SimpleExpressionParser implements ExpressionParser {
         }
 		// if there was not a sum, then parse to see if there is a product
 		if(sum == null){
-			System.out.println("could not parse parenthetical expression, returning a literal: "+str);
+			System.out.println("could not parse parenthetical expression, returning literal or var: "+str);
 			if(str == ""){
 				throw new ExpressionParseException("tried to parse empty string as a literal");
 			}else{
-				return parseLiteralExpression(str);
+				if(str.contains("x")){
+					return parseVariableExpression(str);
+				}else{
+					return parseLiteralExpression(str);
+				}
 			}
 		}
 		
 		return null;
 	}
 
-        // TODO: once you implement a VariableExpression class, fix the return-type below.
-        protected /*Variable*/Expression parseVariableExpression (String str) {
-                if (str.equals("x")) {
-                        // TODO implement the VariableExpression class and uncomment line below
-                        // return new VariableExpression();
-                }
-                return null;
-        }
+	// TODO: once you implement a VariableExpression class, fix the return-type below.
+	protected /*Variable*/Expression parseVariableExpression (String str) {
+		if (str.equals("x")) {
+			// TODO implement the VariableExpression class and uncomment line below
+			return new Variable();
+		}
+		return null;
+	}
 
         // TODO: once you implement a LiteralExpression class, fix the return-type below.
 	protected Literal parseLiteralExpression (String str) {
@@ -199,9 +203,13 @@ public class SimpleExpressionParser implements ExpressionParser {
 
 	public static void main (String[] args) throws ExpressionParseException {
 		final ExpressionParser parser = new SimpleExpressionParser();
-		Expression e = parser.parse("10*-2");
+		Expression e;
+		// e = parser.parse("10/-2*5+20");
+		// e = parser.parse("1+x");
+		e = parser.parse("x^2");
 		System.out.println(e.convertToString(0));
 		System.out.println(e.evaluate(0));
+		System.out.println(e.evaluate(2));
 		// Expression f = parser.parse("-5+7-2");
 		// System.out.println(f.convertToString(0));
 		// System.out.println(f.evaluate(0.0));
