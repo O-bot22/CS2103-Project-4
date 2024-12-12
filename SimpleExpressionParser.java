@@ -36,19 +36,16 @@ public class SimpleExpressionParser implements ExpressionParser {
 				// attempt to parse it as subtraction, but if it fails then try addition or pass on to the next char
 				try{
 					System.out.println("found subtraction sign at "+i);
-					if(i!=0){
-						// ignore a negative if its at the beginning, since it should be parsed as a single literal
-						sum = parseAdditiveExpression(str.substring(0,i));
-						product = parseMultiplicativeExpression(str.substring(i)); // treat the subraction as a negative
-						System.out.println(sum.convertToString(0));
-						System.out.println(product.convertToString(0));
-						Sum expression = new Sum();
-						expression.leftExpression = sum;
-						expression.rightExpression = product;
-						return expression;
-					}
+					sum = parseAdditiveExpression(str.substring(0,i));
+					product = parseMultiplicativeExpression(str.substring(i)); // treat the subraction as a negative
+					System.out.println(sum.convertToString(0));
+					System.out.println(product.convertToString(0));
+					Sum expression = new Sum();
+					expression.leftExpression = sum;
+					expression.rightExpression = product;
+					return expression;
 				}catch (ExpressionParseException e){
-					// if it wasn't addition, then move on
+					// if it wasn't subtraction, then move on
 					System.out.println("could not parse as subtraction");
 				}
 			}else if(str.charAt(i) == '+'){
@@ -57,7 +54,7 @@ public class SimpleExpressionParser implements ExpressionParser {
 				product = parseMultiplicativeExpression(str.substring(i+1)); // split as addition
 				System.out.println(sum.convertToString(0));
 				System.out.println(product.convertToString(0));
-				Sum expression = new Sum(); 
+				Sum expression = new Sum();
 				expression.leftExpression = sum;
 				expression.rightExpression = product;
 				return expression;
@@ -69,25 +66,38 @@ public class SimpleExpressionParser implements ExpressionParser {
 		return parseMultiplicativeExpression(str);
 	}
 	
-	protected Expression parseMultiplicativeExpression (String str) {
-		Expression expression;
-		Expression sum = null;
+	protected Expression parseMultiplicativeExpression (String str) throws ExpressionParseException{
+		// Expression expression;
 		Expression product = null;
-		for (int i=0; i<str.length(); i++) {
-            if(str.charAt(i) == '*'){
-                sum = parseMultiplicativeExpression(str.substring(0,i));
-                product = parseExponentialExpression(str.substring(i+1));
+		Expression exponent = null;
+		for (int i=str.length()-1; i>=0; i--) {
+			if(str.charAt(i) == '/'){
+				System.out.println("found division sign at "+i);
+				product = parseMultiplicativeExpression(str.substring(0,i));
+				exponent = parseExponentialExpression(str.substring(i+1));
+				Product expression = new Product();
+				expression.leftExpression = product;
+				expression.rightExpression = exponent;
+				expression.division = '/';
+				return expression;
+				
+			}else if(str.charAt(i) == '*'){
+				System.out.println("found multiplication sign at "+i);
+				product = parseMultiplicativeExpression(str.substring(0,i));
+				exponent = parseExponentialExpression(str.substring(i+1));
+				Product expression = new Product();
+				expression.leftExpression = product;
+				expression.rightExpression = exponent;
+				expression.division = '*';
+				return expression;
             }
         }
-		// if there was not a product, then parse to see if there is an exponential
-		if(sum == null){
-			System.out.println("could not parse mult. expression, looking for exp. in: "+str);
-			return parseExponentialExpression(str);
-		}
-		
-		return null;
+
+		// if there was not a sum, then parse to see if there is a product
+		System.out.println("could not parse multi. expression, looking for exp. in: "+str);
+		return parseExponentialExpression(str);
 	}
-	protected Expression parseExponentialExpression (String str) {
+	protected Expression parseExponentialExpression (String str) throws ExpressionParseException{
 		Expression expression;
 		Expression sum = null;
 		Expression product = null;
@@ -105,7 +115,7 @@ public class SimpleExpressionParser implements ExpressionParser {
 		
 		return null;
 	}
-	protected Expression parseParentheticalExpression (String str) {
+	protected Expression parseParentheticalExpression (String str)  throws ExpressionParseException{
 		Expression expression;
 		Expression sum = null;
 		Expression product = null;
@@ -118,7 +128,11 @@ public class SimpleExpressionParser implements ExpressionParser {
 		// if there was not a sum, then parse to see if there is a product
 		if(sum == null){
 			System.out.println("could not parse parenthetical expression, returning a literal: "+str);
-			return parseLiteralExpression(str);
+			if(str == ""){
+				throw new ExpressionParseException("tried to parse empty string as a literal");
+			}else{
+				return parseLiteralExpression(str);
+			}
 		}
 		
 		return null;
@@ -185,9 +199,11 @@ public class SimpleExpressionParser implements ExpressionParser {
 
 	public static void main (String[] args) throws ExpressionParseException {
 		final ExpressionParser parser = new SimpleExpressionParser();
-		// System.out.println(parser.parse("10*2+12-4.").convertToString(0));
-		Expression f = parser.parse("-5+7-2");
-		System.out.println(f.convertToString(0));
-		System.out.println(f.evaluate(0.0));
+		Expression e = parser.parse("10*-2");
+		System.out.println(e.convertToString(0));
+		System.out.println(e.evaluate(0));
+		// Expression f = parser.parse("-5+7-2");
+		// System.out.println(f.convertToString(0));
+		// System.out.println(f.evaluate(0.0));
 	}
 }
