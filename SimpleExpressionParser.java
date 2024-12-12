@@ -98,22 +98,34 @@ public class SimpleExpressionParser implements ExpressionParser {
 		return parseExponentialExpression(str);
 	}
 	protected Expression parseExponentialExpression (String str) throws ExpressionParseException{
-		Expression expression;
-		Expression sum = null;
-		Expression product = null;
-		for (int i=0; i<str.length(); i++) {
-            if(str.charAt(i) == '^'){
-                sum = parseMultiplicativeExpression(str.substring(0,i));
-                product = parseParentheticalExpression(str.substring(i+1));
+		// Expression expression;
+		Expression exponent = null;
+		Expression parenthesis = null;
+		for (int i=str.length()-1; i>=0; i--) {
+			if(str.charAt(i) == '^'){
+				System.out.println("found exponential sign at "+i);
+				exponent = parseExponentialExpression(str.substring(0,i));
+				parenthesis = parseParentheticalExpression(str.substring(i+1));
+				Exponent expression = new Exponent();
+				expression.leftExpression = exponent;
+				expression.rightExpression = parenthesis;
+				expression.exp = '^';
+				return expression;
+				
+			}else if(str.charAt(i) == 'g'){ // check for log somehow
+				System.out.println("found log sign at "+i);
+				exponent = parseExponentialExpression(str.substring(0,i));
+				parenthesis = parseParentheticalExpression(str.substring(i+1));
+				Exponent expression = new Exponent();
+				expression.leftExpression = exponent;
+				expression.rightExpression = parenthesis;
+				expression.exp = 'l';
+				return expression;
             }
         }
-		// if there was not an exponential, then parse to see if there is are parenthesis
-		if(sum == null){
-			System.out.println("could not parse exp. expression, looking for paren.: "+str);
-			return parseParentheticalExpression(str);
-		}
-		
-		return null;
+
+		System.out.println("could not parse exp. expression, looking for parenthesis. in: "+str);
+		return parseParentheticalExpression(str);
 	}
 	protected Expression parseParentheticalExpression (String str)  throws ExpressionParseException{
 		Expression expression;
@@ -142,7 +154,6 @@ public class SimpleExpressionParser implements ExpressionParser {
 		return null;
 	}
 
-	// TODO: once you implement a VariableExpression class, fix the return-type below.
 	protected /*Variable*/Expression parseVariableExpression (String str) {
 		if (str.equals("x")) {
 			// TODO implement the VariableExpression class and uncomment line below
@@ -151,7 +162,6 @@ public class SimpleExpressionParser implements ExpressionParser {
 		return null;
 	}
 
-        // TODO: once you implement a LiteralExpression class, fix the return-type below.
 	protected Literal parseLiteralExpression (String str) {
 		// From https://stackoverflow.com/questions/3543729/how-to-check-that-a-string-is-parseable-to-a-double/22936891:
 		final String Digits     = "(\\p{Digit}+)";
@@ -194,8 +204,6 @@ public class SimpleExpressionParser implements ExpressionParser {
 		    "[\\x00-\\x20]*");// Optional trailing "whitespace"
 
 		if (str.matches(fpRegex)) {
-			// return null;
-			// TODO: Once you implement LiteralExpression, replace the line above with the line below:
 			return new Literal(str);
 		}
 		return null;
@@ -206,12 +214,10 @@ public class SimpleExpressionParser implements ExpressionParser {
 		Expression e;
 		// e = parser.parse("10/-2*5+20");
 		// e = parser.parse("1+x");
-		e = parser.parse("x^2");
+		// e = parser.parse("2^-1");
+		e = parser.parse("1+(2)");
 		System.out.println(e.convertToString(0));
-		System.out.println(e.evaluate(0));
-		System.out.println(e.evaluate(2));
-		// Expression f = parser.parse("-5+7-2");
-		// System.out.println(f.convertToString(0));
-		// System.out.println(f.evaluate(0.0));
+		// System.out.println(e.evaluate(0));
+		// System.out.println(e.evaluate(2));
 	}
 }
