@@ -31,39 +31,42 @@ public class SimpleExpressionParser implements ExpressionParser {
 		// Expression expression;
 		Expression sum = null;
 		Expression product = null;
-		// int separator = -1; // was gonna use these to make it cleaner
-		// boolean subtraction = false;
-		for (int i=0; i<str.length(); i++) {
-            if(str.charAt(i) == '+'){
-				System.out.println("found addition sign");
-                sum = parseAdditiveExpression(str.substring(0,i));
-                product = parseMultiplicativeExpression(str.substring(i+1));
+		for (int i=str.length()-1; i>=0; i--) {
+			if(str.charAt(i) == '-'){
+				// attempt to parse it as subtraction, but if it fails then try addition or pass on to the next char
+				try{
+					System.out.println("found subtraction sign at "+i);
+					if(i!=0){
+						// ignore a negative if its at the beginning, since it should be parsed as a single literal
+						sum = parseAdditiveExpression(str.substring(0,i));
+						product = parseMultiplicativeExpression(str.substring(i)); // treat the subraction as a negative
+						System.out.println(sum.convertToString(0));
+						System.out.println(product.convertToString(0));
+						Sum expression = new Sum();
+						expression.leftExpression = sum;
+						expression.rightExpression = product;
+						return expression;
+					}
+				}catch (ExpressionParseException e){
+					// if it wasn't addition, then move on
+					System.out.println("could not parse as subtraction");
+				}
+			}else if(str.charAt(i) == '+'){
+				System.out.println("found addition sign in "+str);
+				sum = parseAdditiveExpression(str.substring(0,i));
+				product = parseMultiplicativeExpression(str.substring(i+1)); // split as addition
 				System.out.println(sum.convertToString(0));
 				System.out.println(product.convertToString(0));
-				Sum expression = new Sum();
+				Sum expression = new Sum(); 
 				expression.leftExpression = sum;
 				expression.rightExpression = product;
 				return expression;
-            }else if(str.charAt(i) == '-'){
-				System.out.println("found subtraction sign");
-                sum = parseAdditiveExpression(str.substring(0,i));
-				// if there is a -, but not a +, then include the - sign in the expression, so that it registers as a negative value
-                product = parseMultiplicativeExpression(str.substring(i));
-				System.out.println(sum.convertToString(0));
-				System.out.println(product.convertToString(0));
-				Sum expression = new Sum();
-				expression.leftExpression = sum;
-				expression.rightExpression = product;
-				return expression;
-			}
+            }
         }
+
 		// if there was not a sum, then parse to see if there is a product
-		if(sum == null){
-			System.out.println("could not parse additive expression, looking for multiplicative: "+str);
-			return parseMultiplicativeExpression(str);
-		}
-		
-		return null;
+		System.out.println("could not parse additive expression, looking for multiplicative in: "+str);
+		return parseMultiplicativeExpression(str);
 	}
 	
 	protected Expression parseMultiplicativeExpression (String str) {
@@ -78,7 +81,7 @@ public class SimpleExpressionParser implements ExpressionParser {
         }
 		// if there was not a product, then parse to see if there is an exponential
 		if(sum == null){
-			System.out.println("could not parse mult. expression, looking for exp.: "+str);
+			System.out.println("could not parse mult. expression, looking for exp. in: "+str);
 			return parseExponentialExpression(str);
 		}
 		
@@ -183,7 +186,7 @@ public class SimpleExpressionParser implements ExpressionParser {
 	public static void main (String[] args) throws ExpressionParseException {
 		final ExpressionParser parser = new SimpleExpressionParser();
 		// System.out.println(parser.parse("10*2+12-4.").convertToString(0));
-		Expression f = parser.parse("5+-7");
+		Expression f = parser.parse("-5+7-2");
 		System.out.println(f.convertToString(0));
 		System.out.println(f.evaluate(0.0));
 	}

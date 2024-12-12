@@ -1,9 +1,11 @@
 public class Sum implements Expression{
 
-    public Expression leftExpression;
-    public Expression rightExpression;
+    Expression leftExpression;
+    Expression rightExpression;
+	boolean subtraction = false;
 
-    public Sum() {}
+    public Sum() {
+	}
     
     public Expression deepCopy(){
 		Sum e = new Sum();
@@ -30,7 +32,11 @@ public class Sum implements Expression{
 	 * @return the value of this expression.
 	 */
 	public double evaluate (double x){
-        return leftExpression.evaluate(x) + rightExpression.evaluate(x);
+		if(subtraction){
+	        return leftExpression.evaluate(x) - rightExpression.evaluate(x);
+		}else{
+	        return leftExpression.evaluate(x) + rightExpression.evaluate(x);
+		}
     };
 
 	/**

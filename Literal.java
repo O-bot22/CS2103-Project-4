@@ -1,4 +1,4 @@
-public class Literal implements Expression{
+public class Literal implements Expression {
 
 	private float _value;
 
