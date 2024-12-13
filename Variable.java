@@ -21,6 +21,7 @@ public class Variable implements Expression{
 			s += '\t';
 		}
 		s += 'x';
+		System.out.println(s);
 		return s;
 	};
 

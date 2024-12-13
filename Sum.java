@@ -2,13 +2,14 @@ public class Sum implements Expression{
 
     Expression leftExpression;
     Expression rightExpression;
-	boolean subtraction = false;
+	boolean subtraction;
 
-    public Sum() {
+    public Sum(boolean sub) {
+		subtraction = sub;
 	}
     
     public Expression deepCopy(){
-		Sum e = new Sum();
+		Sum e = new Sum(subtraction);
 		e.leftExpression = leftExpression.deepCopy();
 		e.rightExpression = leftExpression.deepCopy();
         return e;
@@ -23,7 +24,19 @@ public class Sum implements Expression{
 	 * @return the String representing this expression.
 	 */
 	public String convertToString (int indentLevel){
-        return leftExpression.convertToString(indentLevel) + '+' + rightExpression.convertToString(indentLevel);
+		String s = "";
+		for(int i=0; i<indentLevel; i++){
+			s += '\t';
+		}
+		if(subtraction){
+			s += '-';
+		}else{
+			s += '+';
+		}
+		System.out.println(s);
+		leftExpression.convertToString(indentLevel+1);
+		rightExpression.convertToString(indentLevel+1);
+        return s;
     };
 
 	/**
@@ -45,7 +58,10 @@ public class Sum implements Expression{
 	 * @return the derivative of this expression
 	 */
 	public Expression differentiate (){
-        return new Literal("s");
+		Sum s = new Sum(subtraction);
+		s.leftExpression = leftExpression.differentiate();
+		s.rightExpression = rightExpression.differentiate();
+		return s;
     };
 
 

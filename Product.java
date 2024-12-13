@@ -2,13 +2,14 @@ public class Product implements Expression{
 
     Expression leftExpression;
     Expression rightExpression;
-	char division = '*';
+	boolean division = false;
 
-    public Product() {
+    public Product(boolean div) {
+		division = div;
 	}
     
     public Expression deepCopy(){
-		Product e = new Product();
+		Product e = new Product(division);
 		e.leftExpression = leftExpression.deepCopy();
 		e.rightExpression = leftExpression.deepCopy();
         return e;
@@ -23,7 +24,19 @@ public class Product implements Expression{
 	 * @return the String representing this expression.
 	 */
 	public String convertToString (int indentLevel){
-        return leftExpression.convertToString(indentLevel) + division + rightExpression.convertToString(indentLevel);
+		String s = "";
+		for(int i=0; i<indentLevel; i++){
+			s += '\t';
+		}
+		if(division){
+			s += '/';
+		}else{
+			s += '*';
+		}
+		System.out.println(s);
+		leftExpression.convertToString(indentLevel+1);
+		rightExpression.convertToString(indentLevel+1);
+        return s;
     };
 
 	/**
@@ -32,11 +45,10 @@ public class Product implements Expression{
 	 * @return the value of this expression.
 	 */
 	public double evaluate (double x){
-		if(division == '*'){
-			return leftExpression.evaluate(x) * rightExpression.evaluate(x);
-		}else{
+		if(division){
 			return leftExpression.evaluate(x) / rightExpression.evaluate(x);
-
+		}else{
+			return leftExpression.evaluate(x) * rightExpression.evaluate(x);
 		}
     };
 
@@ -45,8 +57,48 @@ public class Product implements Expression{
 	 * representing the derivative of this expression.
 	 * @return the derivative of this expression
 	 */
-	public Expression differentiate (){
-        return new Literal("s");
+	public Expression differentiate(){
+		if(division){
+			System.out.println("differentiating division");
+			//  f'(x)=g'(x)/h(x) - g(x)h'(x)/h(x)2
+			Sum d = new Sum(true); // subtraction
+
+			Product gPrime_h = new Product(true);  // first expression is division
+			gPrime_h.leftExpression = leftExpression.differentiate();
+			gPrime_h.rightExpression = rightExpression.deepCopy();
+
+			Product expression2 = new Product(true); // (g(x)*h'(x)) / (h(x)^2)
+
+			Product g_hPrime = new Product(false);   // g(x)*h'(x)
+			g_hPrime.leftExpression = leftExpression.deepCopy();
+			g_hPrime.rightExpression = rightExpression.differentiate();
+
+			Exponent hSquared = new Exponent();			 // h(x)^2
+			hSquared.leftExpression = rightExpression.deepCopy();
+			hSquared.rightExpression = new Literal("2");
+
+			expression2.leftExpression = g_hPrime;
+			expression2.rightExpression = hSquared;
+
+			d.leftExpression = gPrime_h;
+			d.rightExpression = expression2;
+
+			return d;
+		}else{
+			Sum d = new Sum(false);
+
+			Product g_hPrime = new Product(false);
+			g_hPrime.leftExpression = leftExpression.deepCopy(); // g
+			g_hPrime.rightExpression = rightExpression.differentiate(); // h'
+
+			Product h_gPrime = new Product(false);
+			h_gPrime.leftExpression = leftExpression.differentiate(); // g
+			h_gPrime.rightExpression = rightExpression.deepCopy(); // h'
+
+			d.leftExpression = g_hPrime;
+			d.rightExpression = h_gPrime;
+			return d;
+		}
     };
 
 

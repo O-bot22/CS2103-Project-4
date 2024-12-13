@@ -1,13 +1,12 @@
-public class Literal implements Expression {
+public class Parenthesis implements Expression{
 
-	private float _value;
+	Expression inner;
 
-    public Literal (String s) {
-        _value = Float.parseFloat(s);
+    public Parenthesis () {
     }
     
     public Expression deepCopy (){
-		return new Literal(Float.toString(_value));
+		return new Parenthesis();
     };
 
 	/**
@@ -23,9 +22,10 @@ public class Literal implements Expression {
 		for(int i=0; i<indentLevel; i++){
 			s += '\t';
 		}
-		s += Float.toString(_value);
+		s += "()";
 		System.out.println(s);
-		return s;
+		inner.convertToString(indentLevel+1);
+        return s;
 	};
 
 	/**
@@ -34,7 +34,7 @@ public class Literal implements Expression {
 	 * @return the value of this expression.
 	 */
 	public double evaluate (double x){
-		return _value;
+		return inner.evaluate(x);
 	};
 
 	/**
@@ -43,7 +43,7 @@ public class Literal implements Expression {
 	 * @return the derivative of this expression
 	 */
 	public Expression differentiate (){
-		return new Literal("0");
+		return inner.differentiate();
 	};
 
 
