@@ -29,16 +29,12 @@ public class SimpleExpressionParser implements ExpressionParser {
 	}
 	
 	protected Expression parseAdditiveExpression (String str) throws ExpressionParseException{
-		Expression sum = null;
-		Expression product = null;
 		for (int i=str.length()-1; i>=0; i--) {
 			if(str.charAt(i) == '+'){
 				try{
-					sum = parseAdditiveExpression(str.substring(0,i));
-					product = parseMultiplicativeExpression(str.substring(i+1)); // split as addition
 					Sum expression = new Sum(false);
-					expression.leftExpression = sum;
-					expression.rightExpression = product;
+					expression.leftExpression = parseAdditiveExpression(str.substring(0,i));
+					expression.rightExpression = parseMultiplicativeExpression(str.substring(i+1));
 					return expression;
 				}catch(ExpressionParseException e){
 					// if we can't split it as addition, then it might be a full S -> M -> E -> P -> S | L | V
@@ -46,11 +42,9 @@ public class SimpleExpressionParser implements ExpressionParser {
 			}else if(str.charAt(i) == '-'){
 				// attempt to parse it as subtraction, but if it fails then try addition or pass on to the next char
 				try{
-					sum = parseAdditiveExpression(str.substring(0,i));
-					product = parseMultiplicativeExpression(str.substring(i+1));
 					Sum expression = new Sum(true);
-					expression.leftExpression = sum;
-					expression.rightExpression = product;
+					expression.leftExpression = parseAdditiveExpression(str.substring(0,i));
+					expression.rightExpression = parseMultiplicativeExpression(str.substring(i+1));
 					return expression;
 				}catch (ExpressionParseException e){
 					// if it wasn't subtraction, then move on
@@ -63,27 +57,21 @@ public class SimpleExpressionParser implements ExpressionParser {
 	}
 	
 	protected Expression parseMultiplicativeExpression (String str) throws ExpressionParseException{
-		Expression product = null;
-		Expression exponent = null;
 		for (int i=str.length()-1; i>=0; i--) {
 			if(str.charAt(i) == '/'){
 				try{
-					product = parseMultiplicativeExpression(str.substring(0,i));
-					exponent = parseExponentialExpression(str.substring(i+1));
 					Product expression = new Product(true);
-					expression.leftExpression = product;
-					expression.rightExpression = exponent;
+					expression.leftExpression = parseMultiplicativeExpression(str.substring(0,i));
+					expression.rightExpression = parseExponentialExpression(str.substring(i+1));
 					return expression;
 				}catch(ExpressionParseException e){
 					// if we can't split it as multiplication, then it might be a full E -> P -> S | L | V
 				}
 			}else if(str.charAt(i) == '*'){
 				try{
-					product = parseMultiplicativeExpression(str.substring(0,i));
-					exponent = parseExponentialExpression(str.substring(i+1));
 					Product expression = new Product(false);
-					expression.leftExpression = product;
-					expression.rightExpression = exponent;
+					expression.leftExpression = parseMultiplicativeExpression(str.substring(0,i));
+					expression.rightExpression = parseExponentialExpression(str.substring(i+1));
 					return expression;
 				}catch(ExpressionParseException e){
 					// if we can't split it as multiplication, then it might be a full E -> P -> S | L | V
@@ -95,16 +83,12 @@ public class SimpleExpressionParser implements ExpressionParser {
 		return parseExponentialExpression(str);
 	}
 	protected Expression parseExponentialExpression (String str) throws ExpressionParseException{
-		Expression exponent = null;
-		Expression parenthesis = null;
 		for (int i=str.length()-1; i>=0; i--) {
 			if(str.charAt(i) == '^'){
 				try{
-					exponent = parseExponentialExpression(str.substring(0,i));
-					parenthesis = parseParentheticalExpression(str.substring(i+1));
 					Exponent expression = new Exponent();
-					expression.leftExpression = exponent;
-					expression.rightExpression = parenthesis;
+					expression.leftExpression = parseExponentialExpression(str.substring(0,i));
+					expression.rightExpression = parseParentheticalExpression(str.substring(i+1));
 					return expression;
 				}catch(ExpressionParseException e){
 					// if it wasn't an exponent, look to see if it could be just a parenthesis
@@ -112,9 +96,8 @@ public class SimpleExpressionParser implements ExpressionParser {
 			}else if(str.charAt(i) == 'g'){ // check for log somehow
 				System.out.println(str.substring(i-2,i+1));
 				if(str.substring(i-2,i+1).equals("log")){
-					parenthesis = parseParentheticalExpression(str.substring(i+1,str.length()));
 					Exponent expression = new Exponent();
-					expression.leftExpression = parenthesis;
+					expression.leftExpression = parseParentheticalExpression(str.substring(i+1,str.length()));
 					return expression;
 				}
             }
