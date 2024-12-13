@@ -4,10 +4,18 @@ public class Product implements Expression{
     Expression rightExpression;
 	boolean division = false;
 
+	/**
+	 * @param div flag to set the product to muliplication or division
+	 */
     public Product(boolean div) {
 		division = div;
 	}
-    
+
+    /**
+	 * Creates a seperate instance of the expression
+	 * with the same properties and child expressions
+	 * @return a deep copy of this expression
+	 */
     public Expression deepCopy(){
 		Product e = new Product(division);
 		e.leftExpression = leftExpression.deepCopy();

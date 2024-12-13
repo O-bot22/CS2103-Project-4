@@ -2,9 +2,13 @@ public class Parenthesis implements Expression{
 
 	Expression inner;
 
-    public Parenthesis () {
-    }
-    
+    public Parenthesis () {}
+
+    /**
+	 * Creates a seperate instance of the expression
+	 * with the same properties and child expressions
+	 * @return a deep copy of this expression
+	 */
     public Expression deepCopy (){
 		return new Parenthesis();
     };

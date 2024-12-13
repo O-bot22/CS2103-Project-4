@@ -1,11 +1,18 @@
 public class Literal implements Expression {
 
 	private float _value;
-
+	/**
+	 * @param s value of the literal to be parsed
+	 */
     public Literal (String s) {
         _value = Float.parseFloat(s);
     }
     
+	/**
+	 * Creates a seperate instance of the expression
+	 * with the same properties and child expressions
+	 * @return a deep copy of this expression
+	 */
     public Expression deepCopy (){
 		return new Literal(Float.toString(_value));
     };

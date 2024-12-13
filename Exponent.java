@@ -3,8 +3,8 @@ public class Exponent implements Expression{
     Expression leftExpression;
     Expression rightExpression;
 
-    public Exponent() {
-	}
+    public Exponent() {}
+
     /**
 	 * Creates a seperate instance of the expression
 	 * with the same properties and child expressions

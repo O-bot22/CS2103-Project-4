@@ -1,8 +1,12 @@
 public class Variable implements Expression{
 
-    public Variable () {
-    }
+    public Variable () {}
     
+	/**
+	 * Creates a seperate instance of the expression
+	 * with the same properties and child expressions
+	 * @return a deep copy of this expression
+	 */
     public Expression deepCopy (){
 		return new Variable();
     };

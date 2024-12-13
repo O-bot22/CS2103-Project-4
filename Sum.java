@@ -4,10 +4,18 @@ public class Sum implements Expression{
     Expression rightExpression;
 	boolean subtraction;
 
+	/**
+	 * @param div flag to set the product to subtraction or addition
+	 */
     public Sum(boolean sub) {
 		subtraction = sub;
 	}
-    
+
+    /**
+	 * Creates a seperate instance of the expression
+	 * with the same properties and child expressions
+	 * @return a deep copy of this expression
+	 */
     public Expression deepCopy(){
 		Sum e = new Sum(subtraction);
 		e.leftExpression = leftExpression.deepCopy();
