@@ -30,26 +30,22 @@ public class SimpleExpressionParser implements ExpressionParser {
 	
 	protected Expression parseAdditiveExpression (String str) throws ExpressionParseException{
 		for (int i=str.length()-1; i>=0; i--) {
-			if(str.charAt(i) == '+'){
-				try{
+			try{
+				if(str.charAt(i) == '+'){
 					Sum expression = new Sum(false);
 					expression.leftExpression = parseAdditiveExpression(str.substring(0,i));
 					expression.rightExpression = parseMultiplicativeExpression(str.substring(i+1));
 					return expression;
-				}catch(ExpressionParseException e){
-					// if we can't split it as addition, then it might be a full S -> M -> E -> P -> S | L | V
-				}
-			}else if(str.charAt(i) == '-'){
-				// attempt to parse it as subtraction, but if it fails then try addition or pass on to the next char
-				try{
+				}else if(str.charAt(i) == '-'){
+					// attempt to parse it as subtraction, but if it fails then try addition or pass on to the next char
 					Sum expression = new Sum(true);
 					expression.leftExpression = parseAdditiveExpression(str.substring(0,i));
 					expression.rightExpression = parseMultiplicativeExpression(str.substring(i+1));
 					return expression;
-				}catch (ExpressionParseException e){
-					// if it wasn't subtraction, then move on
 				}
-            }
+			}catch(ExpressionParseException e){
+				// if we can't split it as addition, then it might be a full S -> M -> E -> P -> S | L | V
+			}
         }
 
 		// if there was not a sum, then parse to see if there is a product
@@ -58,25 +54,22 @@ public class SimpleExpressionParser implements ExpressionParser {
 	
 	protected Expression parseMultiplicativeExpression (String str) throws ExpressionParseException{
 		for (int i=str.length()-1; i>=0; i--) {
-			if(str.charAt(i) == '/'){
-				try{
+			try{
+				if(str.charAt(i) == '/'){
 					Product expression = new Product(true);
 					expression.leftExpression = parseMultiplicativeExpression(str.substring(0,i));
 					expression.rightExpression = parseExponentialExpression(str.substring(i+1));
 					return expression;
-				}catch(ExpressionParseException e){
-					// if we can't split it as multiplication, then it might be a full E -> P -> S | L | V
-				}
-			}else if(str.charAt(i) == '*'){
-				try{
+				}else if(str.charAt(i) == '*'){
 					Product expression = new Product(false);
 					expression.leftExpression = parseMultiplicativeExpression(str.substring(0,i));
 					expression.rightExpression = parseExponentialExpression(str.substring(i+1));
 					return expression;
-				}catch(ExpressionParseException e){
-					// if we can't split it as multiplication, then it might be a full E -> P -> S | L | V
 				}
-            }
+			}catch(ExpressionParseException e){
+				// if we can't split it as multiplication, then it might be a full E -> P -> S | L | V
+			}
+            
         }
 
 		// if there was not a product, then parse to see if there is a exponent
